@@ -8,10 +8,23 @@ const { createQuerySuggestionsPlugin } = window[
 ];
 const { connectRefinementList } = instantsearch.connectors;
 
-// Labels displayed in the checkbox facets per language.
+let currentLang = "en";
+
 const labelTranslations = {
   en: {
     attributes: {},
+    ui: {
+      course: "Course",
+      difficulty: "Difficulty",
+      temperature: "Temperature",
+      season: "Season",
+      prep: "Prep",
+      cook: "Cook",
+      ingredients: "Ingredients",
+      description: "Description",
+      notes: "Personal notes",
+      back: "Back to recipes",
+    }
   },
   fr: {
     attributes: {
@@ -20,8 +33,24 @@ const labelTranslations = {
       difficulty: 'difficulté',
       temperature: 'température',
       ingredients: 'ingrédients',
+    },
+    ui: {
+      course: "Type",
+      difficulty: "Difficulté",
+      temperature: "Température",
+      season: "Saison",
+      prep: "Préparation",
+      cook: "Cuisson",
+      ingredients: "Ingrédients",
+      description: "Description",
+      notes: "Notes personnelles",
+      back: "Retour aux recettes",
     }
-  },
+  }
+};
+
+const tUI = (key) => {
+  return labelTranslations[currentLang]?.ui?.[key] || key;
 };
 
 const translateAttributeLabel = (attribute) => {
@@ -95,6 +124,7 @@ const dropdownCheckboxRefinementList = connectRefinementList(
 );
 
 const searchClient = algoliasearch('2NLPXJ1X2G', process.env.API_KEY);
+const index = searchClient.initIndex('test');
 
 const search = instantsearch({
   indexName: 'test',
@@ -105,8 +135,6 @@ const search = instantsearch({
 
 const virtualSearchBox = instantsearch.connectors.connectSearchBox(() => { });
 
-// default language
-let currentLang = "en";
 let languageConfigure = instantsearch.widgets.configure({
   facetFilters: [`lang:${currentLang}`],
 });
@@ -125,7 +153,7 @@ search.addWidgets([
 <article class="hit">
   <img src=${hit.image_url || ''} alt=${hit.name} />
   <div>
-    <h1>${components.Highlight({ hit, attribute: "name" })}</h1>
+    <h1><a href="?recipe=${encodeURIComponent(hit.objectID)}">${components.Highlight({ hit, attribute: "name" })}</a></h1>
     <p>${components.Snippet({ hit, attribute: "description" })}</p>
   </div>
 </article>
@@ -155,6 +183,121 @@ search.addWidgets([
 
 search.start();
 
+const searchView = document.getElementById('search-view');
+const recipeView = document.getElementById('recipe-view');
+const recipeDetail = document.getElementById('recipe-detail');
+const backButton = document.getElementById('back-to-search');
+backButton.textContent = tUI("back");
+
+function getRecipeIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('recipe');
+}
+
+function showSearchView() {
+  recipeView.style.display = 'none';
+  searchView.style.display = '';
+}
+
+function showRecipeView() {
+  searchView.style.display = 'none';
+  recipeView.style.display = '';
+}
+
+async function renderRecipe(recipeId) {
+  if (!recipeDetail) return;
+
+  recipeDetail.innerHTML = '<p>Loading…</p>';
+
+  try {
+    const hit = await index.getObject(recipeId);
+
+    // 🔹 Sync UI language with the record language
+    if (hit.lang) {
+      currentLang = hit.lang;
+
+      // Sync the <select> as well
+      const langSelect = document.querySelector('#lang-select');
+      if (langSelect) {
+        langSelect.value = currentLang;
+      }
+
+      // (optional) keep list view filter in sync too
+      updateLanguageFilter(currentLang);
+    }
+
+    recipeDetail.innerHTML = `
+      <article class="recipe-detail-card">
+        ${hit.image_url ? `<img src="${hit.image_url}" alt="${hit.name}" class="recipe-detail__image" />` : ''}
+
+        <h1 class="recipe-detail__title">${hit.name}</h1>
+
+        <p class="recipe-detail__meta">
+          ${hit.course ? `<strong>${tUI("course")}:</strong> ${hit.course} · ` : ''}
+          ${hit.difficulty ? `<strong>${tUI("difficulty")}:</strong> ${hit.difficulty} · ` : ''}
+          ${hit.temperature ? `<strong>${tUI("temperature")}:</strong> ${hit.temperature} · ` : ''}
+          ${hit.season ? `<strong>${tUI("season")}:</strong> ${Array.isArray(hit.season) ? hit.season.join(', ') : hit.season
+        } · ` : ''}
+          ${hit.prep_time_minutes ? `<strong>${tUI("prep")}:</strong> ${hit.prep_time_minutes} min · ` : ''}
+          ${hit.cooking_time_minutes ? `<strong>${tUI("cook")}:</strong> ${hit.cooking_time_minutes} min` : ''}
+        </p>
+
+        ${hit.ingredients ? `
+          <section class="recipe-detail__section">
+            <h2>${tUI("ingredients")}</h2>
+            <ul>
+              ${(Array.isArray(hit.ingredients) ? hit.ingredients : [hit.ingredients])
+          .map((ingredient) => `<li>${ingredient}</li>`)
+          .join('')}
+            </ul>
+          </section>
+        ` : ''}
+
+        ${hit.description ? `
+          <section class="recipe-detail__section">
+            <h2>${tUI("description")}</h2>
+            <p>${hit.description}</p>
+          </section>
+        ` : ''}
+
+        <section class="recipe-detail__section">
+          <h2>${tUI("notes")}</h2>
+          <p>${hit.personal_notes || '<em>No notes yet.</em>'}</p>
+        </section>
+
+        ${hit.recipe_url ? `
+          <p class="recipe-detail__link">
+            <a href="${hit.recipe_url}" target="_blank" rel="noopener noreferrer">
+              View original recipe ↗
+            </a>
+          </p>
+        ` : ''}
+      </article>
+    `;
+  } catch (error) {
+    console.error(error);
+    recipeDetail.innerHTML = '<p>Recipe not found.</p>';
+  }
+}
+
+// Back button: go back to list (remove ?recipe from URL)
+if (backButton) {
+  backButton.addEventListener('click', () => {
+    // simplest: go back to root without query params
+    window.location.href = window.location.pathname;
+  });
+}
+
+// On first load: decide which view to show
+const recipeId = getRecipeIdFromUrl();
+
+if (recipeId) {
+  showRecipeView();
+  renderRecipe(recipeId);
+} else {
+  showSearchView();
+}
+
 const langSelect = document.querySelector('#lang-select');
 
 const updateLanguageFilter = (newLang) => {
@@ -169,11 +312,18 @@ const updateLanguageFilter = (newLang) => {
   search.addWidgets([languageConfigure]);
 };
 
-langSelect.addEventListener('change', (event) => {
-  currentLang = event.target.value;
+langSelect.addEventListener('change', async (event) => {
+  const newLang = event.target.value;
+  currentLang = newLang;
 
-  // Update the configure widget with the new language facet filter
   updateLanguageFilter(currentLang);
+
+  const params = new URLSearchParams(window.location.search);
+  const currentRecipeId = params.get('recipe');
+
+  if (currentRecipeId) {
+    await switchRecipeLanguage(currentRecipeId, newLang);
+  }
 });
 
 const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
@@ -247,4 +397,31 @@ function isModifierEvent(event) {
     event.metaKey ||
     event.shiftKey
   );
+}
+
+async function switchRecipeLanguage(currentRecipeId, newLang) {
+  try {
+    const currentHit = await index.getObject(currentRecipeId);
+
+    const groupId = currentHit.group_id;
+    if (!groupId) {
+      console.warn('No group_id on current recipe, cannot switch language');
+      return;
+    }
+
+    const { hits } = await index.search('', {
+      filters: `group_id:"${groupId}" AND lang:"${newLang}"`,
+      hitsPerPage: 1,
+    });
+
+    if (!hits.length) {
+      console.warn('No recipe found for group_id and lang', groupId, newLang);
+      return;
+    }
+
+    const target = hits[0];
+    window.location.href = `?recipe=${encodeURIComponent(target.objectID)}`;
+  } catch (error) {
+    console.error('Error switching recipe language:', error);
+  }
 }
