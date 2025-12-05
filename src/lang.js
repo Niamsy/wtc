@@ -1,9 +1,26 @@
-export let currentLang = 'en';
+const DEFAULT_LANG = 'en';
+const LANG_STORAGE_KEY = 'wtc:lang';
+
+function loadInitialLang() {
+    try {
+        return localStorage.getItem(LANG_STORAGE_KEY) || DEFAULT_LANG;
+    } catch (error) {
+        console.warn('Unable to read stored language preference', error);
+        return DEFAULT_LANG;
+    }
+}
+
+export let currentLang = loadInitialLang();
 
 const listeners = new Set();
 
 export function setCurrentLang(lang) {
     currentLang = lang;
+    try {
+        localStorage.setItem(LANG_STORAGE_KEY, lang);
+    } catch (error) {
+        console.warn('Unable to persist language preference', error);
+    }
     listeners.forEach((fn) => fn(lang));
 }
 
@@ -26,6 +43,7 @@ export const labelTranslations = {
             description: 'Description',
             notes: 'Personal notes',
             back: 'Back to recipes',
+            url: 'View original recipe'
         },
     },
     fr: {
@@ -47,6 +65,7 @@ export const labelTranslations = {
             description: 'Description',
             notes: 'Notes personnelles',
             back: 'Retour aux recettes',
+            url: 'Voir la recette originale'
         },
     },
 };

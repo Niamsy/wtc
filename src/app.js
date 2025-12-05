@@ -3,7 +3,7 @@ import { searchClient } from './client.js';
 import { initSearch, search } from './search.js';
 import { initDetailView } from './details.js';
 import { initAutocomplete } from './autocomplete.js';
-import { setCurrentLang } from './lang.js';
+import { setCurrentLang, currentLang } from './lang.js';
 import { updateLanguageFilter } from './search.js';
 import { switchRecipeLanguage } from './details.js';
 
@@ -19,6 +19,9 @@ initAutocomplete(searchClient, setInstantSearchUiState);
 const langSelect = document.querySelector('#lang-select');
 
 if (langSelect) {
+  langSelect.value = currentLang;
+  updateLanguageFilter(currentLang);
+
   langSelect.addEventListener('change', async (event) => {
     const newLang = event.target.value;
 

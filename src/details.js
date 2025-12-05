@@ -81,7 +81,7 @@ export async function renderRecipe(recipeId) {
         ${hit.recipe_url ? `
           <p class="recipe-detail__link">
             <a href="${hit.recipe_url}" target="_blank" rel="noopener noreferrer">
-              View original recipe ↗
+              ${tUI("url")} ↗
             </a>
           </p>
         ` : ''}
