@@ -32,11 +32,29 @@ export function initSearch() {
             container: '#hits',
             templates: {
                 item: (hit, { html, components }) => html`
-<article class="hit">
-  <img src=${hit.image_url || ''} alt=${hit.name} />
-  <div>
-    <h1><a href="?recipe=${encodeURIComponent(hit.objectID)}">${components.Highlight({ hit, attribute: "name" })}</a></h1>
-    <p>${components.Snippet({ hit, attribute: "description" })}</p>
+<article class="hit-card">
+  <div class="hit-thumb">
+    ${hit.image_url
+        ? html`<img src=${hit.image_url} alt=${hit.name} loading="lazy" />`
+        : html`<div class="hit-thumb__placeholder" aria-hidden="true">🍳</div>`}
+  </div>
+  <div class="hit-body">
+    <h1 class="hit-title">
+      <a href="?recipe=${encodeURIComponent(hit.objectID)}">
+        ${components.Highlight({ hit, attribute: "name" })}
+      </a>
+    </h1>
+    <p class="hit-desc">
+      ${components.Snippet({ hit, attribute: "description" })}
+    </p>
+    ${html`<p class="hit-meta">
+      ${[
+          hit.course,
+          hit.difficulty,
+      ]
+          .filter(Boolean)
+          .map((meta) => html`<span>${meta}</span>`)}
+    </p>`}
   </div>
 </article>
 `,

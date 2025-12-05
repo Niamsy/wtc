@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="wtc logo">
+  <g transform="translate(10 10)">
+    <rect x="66" y="46" width="28" height="10" rx="5" fill="#F7C19E" transform="rotate(-12 66 46)" />
+    <path d="M10 62c1-12 10-21 22-21h32c10 0 19 8 21 18l1 8c0 4-3 8-8 9L29 88c-5 1-9-2-9-7Z" fill="#2B5F5A" />
+    <path d="M52 25c0-10 13-15 20-8 5 5 3 13-2 19L54 52c-3 3-9 3-12-1s-3-9 0-12Z" fill="#7BBFB8" />
+    <path d="M62 20c2-2 7-2 9 0s1 5 1 7l-3 7c-1 2-4 3-6 1-3-1-4-5-3-7Z" fill="#F7C19E" />
+    <path d="M60 76c-2-2-2-5 0-7l9-8c1-1 3-1 4 0s1 3 0 4l-9 9c-2 2-4 2-4 2Z" fill="#7BBFB8" />
+    <path d="M28 68c10 2 23 1 39-4" stroke="#F7C19E" stroke-width="5" stroke-linecap="round" opacity="0.6" />
+    <path d="M80 20c0-7 7-12 13-12 6 0 11 4 11 10 0 8-6 10-6 13 0 2-2 4-5 4s-5-2-5-5c0-6 7-8 7-12 0-3-2-5-5-5s-6 3-6 7c0 2-2 4-4 4-3 0-6-2-6-4Z" fill="none" stroke="#7BBFB8" stroke-width="3.6" stroke-linecap="round" />
+    <path d="M94 52c1 0 2 1 2 3s-1 3-3 3-3-1-3-3 1-3 4-3Z" fill="#7BBFB8" />
+    <path d="m18 35-5-8" stroke="#F7C19E" stroke-width="4" stroke-linecap="round" />
+    <path d="m26 28 2-7" stroke="#F7C19E" stroke-width="4" stroke-linecap="round" />
+    <path d="m32 42 6-4" stroke="#F7C19E" stroke-width="4" stroke-linecap="round" />
+    <circle cx="18" cy="60" r="4" fill="white" opacity="0.7" />
+    <circle cx="36" cy="54" r="4" fill="white" opacity="0.6" />
+  </g>
+</svg>

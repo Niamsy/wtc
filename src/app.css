@@ -1,16 +1,33 @@
+:root {
+  --mint: #7bbfb8;
+  --deep: #2b5f5a;
+  --apricot: #f7c19e;
+  --seafoam: #f4fffc;
+  --ink: #1f2d2c;
+  --card: #ffffff;
+}
+
+body {
+  font-family: "Inter", "Avenir Next", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(140% 120% at 20% 20%, rgba(123, 191, 184, 0.08), transparent 35%),
+    radial-gradient(120% 120% at 80% 10%, rgba(247, 193, 158, 0.12), transparent 40%),
+    #f8fbfa;
+  color: var(--ink);
+}
+
 .header {
   display: flex;
   align-items: center;
   min-height: 50px;
   padding: 0.5rem 1rem;
-  background-image: linear-gradient(284deg, #fedd4e, #fcb43a);
-  color: #fff;
+  background-image: linear-gradient(120deg, #7bbfb8, #2b5f5a);
+  color: #f4fffc;
   margin-bottom: 1rem;
   gap: 0.5rem;
 }
 
 .header a {
-  color: #fff;
+  color: #f4fffc;
   text-decoration: none;
 }
 
@@ -19,13 +36,36 @@
   font-weight: normal;
 }
 
-.header-title::after {
-  content: ' ▸ ';
-  padding: 0 0.5rem;
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
-.header-subtitle {
-  font-size: 1.2rem;
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(244, 255, 252, 0.16), rgba(255, 255, 255, 0.08));
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.logo-mark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.logo-text {
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
 }
 
 .container {
@@ -36,6 +76,8 @@
 
 .search-panel {
   display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
 }
 
 .search-panel__filters {
@@ -53,8 +95,22 @@
   font-size: inherit;
 }
 
+.ais-Hits-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ais-Hits-item {
+  display: flex;
+  height: 100%;
+}
+
 #searchbox {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 #pagination {
@@ -62,13 +118,94 @@
   text-align: center;
 }
 
-.ais-Hits-item article {
-  display: flex;
+.hit-card {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 0.9rem;
+  padding: 0.9rem;
+  background: var(--card);
+  border: 1px solid rgba(43, 95, 90, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
 }
 
-.ais-Hits-item img {
-  max-height: 125px;
-  padding-right: 16px;
+.hit-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(43, 95, 90, 0.18);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
+}
+
+.hit-thumb {
+  width: 110px;
+  height: 110px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(123, 191, 184, 0.12), rgba(247, 193, 158, 0.18));
+  display: grid;
+  place-items: center;
+}
+
+.hit-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hit-thumb__placeholder {
+  font-size: 1.8rem;
+}
+
+.hit-body {
+  display: grid;
+  gap: 0.35rem;
+  align-content: center;
+}
+
+.hit-title {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.hit-title a {
+  color: var(--deep);
+  text-decoration: none;
+}
+
+.hit-title a:hover {
+  color: #103532;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--apricot);
+}
+
+.hit-desc {
+  margin: 0;
+  color: #4a5d5a;
+  font-size: 0.93rem;
+}
+
+.hit-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+
+.hit-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(123, 191, 184, 0.16);
+  color: #1f3f3b;
+  font-size: 0.82rem;
 }
 
 /* Facet dropdown styling */
@@ -235,4 +372,135 @@
 .back-button:focus-visible {
   outline: 2px solid #5468ff;
   outline-offset: 2px;
+}
+
+.recipe-detail-card {
+  background: var(--card);
+  border: 1px solid rgba(43, 95, 90, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.08);
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.recipe-detail__image {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.recipe-detail__title {
+  font-size: 1.6rem;
+  margin: 0.25rem 0;
+  color: var(--deep);
+}
+
+.recipe-detail__meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #35524f;
+}
+
+.recipe-detail__meta strong {
+  color: #103532;
+}
+
+.recipe-detail__section {
+  background: linear-gradient(120deg, rgba(123, 191, 184, 0.08), rgba(247, 193, 158, 0.08));
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+}
+
+.recipe-detail__section h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  color: #103532;
+}
+
+.recipe-detail__section ul {
+  padding-left: 1rem;
+  margin: 0.25rem 0 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.recipe-detail__section p {
+  margin: 0;
+  color: #2e4744;
+}
+
+.recipe-detail__link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(247, 193, 158, 0.2);
+  color: #8b4f2e;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.recipe-detail__link a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.footer-note {
+  max-width: 1200px;
+  margin: 2rem auto 3rem;
+  padding: 0 1rem;
+  font-size: 0.85rem;
+  color: #5a7d79;
+  text-align: right;
+  opacity: 0.8;
+}
+
+.footer-note a {
+  color: #2b5f5a;
+}
+
+@media (max-width: 900px) {
+  .header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .search-panel {
+    flex-direction: column;
+  }
+
+  .ais-Hits-list {
+    grid-template-columns: 1fr;
+  }
+
+  .hit-card {
+    grid-template-columns: 90px 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .logo-mark {
+    width: 52px;
+    height: 52px;
+  }
+
+  .logo-text {
+    font-size: 1.15rem;
+  }
+
+  .hit-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hit-thumb {
+    width: 100%;
+    height: 160px;
+  }
 }
