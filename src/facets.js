@@ -23,13 +23,37 @@ export const dropdownCheckboxRefinementList = connectRefinementList(
             details.appendChild(list);
             container.appendChild(details);
 
-            widgetParams._elements = { list, summary };
+            widgetParams._elements = { list, summary, lastItems: [] };
         }
 
         const { list, summary } = widgetParams._elements;
 
+        // Preserve refined items even if the API omits them after filtering
+        const lastItems = widgetParams._elements.lastItems || [];
+        const refinedFromLast = lastItems.filter((item) => item.isRefined);
+
+        const mergedItems = [];
+        const seen = new Map();
+
+        [...items, ...refinedFromLast].forEach((item) => {
+            if (!seen.has(item.value)) {
+                seen.set(item.value, item);
+                mergedItems.push(item);
+            } else {
+                const existing = seen.get(item.value);
+                seen.set(item.value, {
+                    ...existing,
+                    ...item,
+                    isRefined: existing.isRefined || item.isRefined,
+                    count: item.count ?? existing.count,
+                });
+            }
+        });
+
+        widgetParams._elements.lastItems = mergedItems;
+
         const translatedAttribute = translateAttributeLabel(attribute);
-        const refinedCount = items.filter((item) => item.isRefined).length;
+        const refinedCount = mergedItems.filter((item) => item.isRefined).length;
 
         summary.textContent = refinedCount
             ? `${translatedAttribute} (${refinedCount})`
@@ -37,7 +61,9 @@ export const dropdownCheckboxRefinementList = connectRefinementList(
 
         list.innerHTML = '';
 
-        items.forEach((item) => {
+        mergedItems
+            .sort((a, b) => Number(b.isRefined) - Number(a.isRefined) || a.label.localeCompare(b.label))
+            .forEach((item) => {
             const label = document.createElement('label');
             label.className = 'facet-dropdown__option';
 
